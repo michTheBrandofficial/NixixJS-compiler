@@ -1,17 +1,40 @@
-import { isSkippable, isAlpha, token } from "./helpers";
+import { isAlpha, isSkippable, token } from "./helper";
 
 enum TokenType {
   TagName,
+  Identifier,
   LessThan,
   GreaterThan, 
   LessThanSlash,
   Equals, 
   OpenParen,
   OpenCurlyBrace,
-  Comma,
   CloseCurlyBrace,
   CloseParen,
+  Comma,
   EqualsGreaterThan,
+  SemiColon,
+  Const,
+  Let,
+  Return,
+  For,
+}
+
+enum ElementTokenType {
+  div,
+  a,
+  abbr,
+  main
+}
+
+const ELEMENTS: Record<string, ElementTokenType> = {
+  div: ElementTokenType.div,
+  a: ElementTokenType.a
+}
+
+const KEYWORDS: Record<string, TokenType> = {
+  'const': TokenType.Const,
+  'return': TokenType.Return
 }
 
 // takes in a string, '<div></div>' for e.g and splits it into individual characters, then checks if they match a specific thing.
@@ -28,19 +51,45 @@ function tokenize(sourceCode: string): Token[] {
       tokens[tokens.length - 1].value += src.shift();
       tokens[tokens.length - 1].type = TokenType.LessThanSlash
     } else if (src[0] === '>'){
-      tokens.push(token(src.shift(), TokenType.GreaterThan));
+      if (tokens[tokens.length -1].value === '='){
+        console.log('done')
+        tokens[tokens.length - 1].value += src.shift();
+        tokens[tokens.length - 1].type = TokenType.EqualsGreaterThan
+      } else {
+        tokens.push(token(src.shift(), TokenType.GreaterThan))
+      }
+    } else if (src[0] === '=') {
+      tokens.push(token(src.shift(), TokenType.Equals))
+    } else if (src[0] === '{') {
+      tokens.push(token(src.shift(), TokenType.OpenCurlyBrace))
+    } else if (src[0] === '}') {
+      tokens.push(token(src.shift(), TokenType.CloseCurlyBrace))
+    } else if (src[0] === '(') {
+      tokens.push(token(src.shift(), TokenType.OpenParen))
+    } else if (src[0] === ')') {
+      tokens.push(token(src.shift(), TokenType.CloseParen))
+    } else if (src[0] === ',') {
+      tokens.push(token(src.shift(), TokenType.Comma))
+    } else if (src[0] === ';') {
+      tokens.push(token(src.shift(), TokenType.SemiColon))
     } else {
       if (isAlpha(src[0])) {
-        let alpha = '';
+        let identifier = '';
         while (src.length > 0 && isAlpha(src[0])) {
-          alpha += src[0];
+          identifier += src[0];
           src.shift();
         }
-        tokens.push(token(alpha, TokenType.TagName))
+        const reserved = KEYWORDS[identifier];
+        if (reserved == undefined) {
+          tokens.push(token(identifier, TokenType.Identifier));
+        } else {
+          tokens.push(token(identifier, reserved))
+        }
       } else if (isSkippable(src[0])) {
-        src.shift() // move to next character
+        src.shift()// move to next character
       } else {
-        throw `Unrecognized source ${src[0]}`
+        src.shift()
+        console.log('me')
       }
     }
   }

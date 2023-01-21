@@ -1,9 +1,5 @@
-const App name job > {
+const App = ({name}) => { 
   return (
-    <div>
-      
-    </div>
+    <div>{name}</div>
   )
-}
-
-// keyword, identifier, equals, Paren, curlybrace, equalsgreaterthan 
+};

@@ -1,12 +1,10 @@
-export {};
+export {}
 
-declare global {
-  type TokenType ={
-    
-  }
+declare global { 
+  interface TokenType {}
 
   interface Token {
     value: string,
     type: TokenType
-  }
+  } 
 }

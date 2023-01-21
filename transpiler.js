@@ -1,20 +1,41 @@
 "use strict";
 exports.__esModule = true;
-var helpers_1 = require("./helpers");
+var helper_1 = require("./helper");
 var TokenType;
 (function (TokenType) {
     TokenType[TokenType["TagName"] = 0] = "TagName";
-    TokenType[TokenType["LessThan"] = 1] = "LessThan";
-    TokenType[TokenType["GreaterThan"] = 2] = "GreaterThan";
-    TokenType[TokenType["LessThanSlash"] = 3] = "LessThanSlash";
-    TokenType[TokenType["Equals"] = 4] = "Equals";
-    TokenType[TokenType["OpenParen"] = 5] = "OpenParen";
-    TokenType[TokenType["OpenCurlyBrace"] = 6] = "OpenCurlyBrace";
-    TokenType[TokenType["Comma"] = 7] = "Comma";
+    TokenType[TokenType["Identifier"] = 1] = "Identifier";
+    TokenType[TokenType["LessThan"] = 2] = "LessThan";
+    TokenType[TokenType["GreaterThan"] = 3] = "GreaterThan";
+    TokenType[TokenType["LessThanSlash"] = 4] = "LessThanSlash";
+    TokenType[TokenType["Equals"] = 5] = "Equals";
+    TokenType[TokenType["OpenParen"] = 6] = "OpenParen";
+    TokenType[TokenType["OpenCurlyBrace"] = 7] = "OpenCurlyBrace";
     TokenType[TokenType["CloseCurlyBrace"] = 8] = "CloseCurlyBrace";
     TokenType[TokenType["CloseParen"] = 9] = "CloseParen";
-    TokenType[TokenType["EqualsGreaterThan"] = 10] = "EqualsGreaterThan";
+    TokenType[TokenType["Comma"] = 10] = "Comma";
+    TokenType[TokenType["EqualsGreaterThan"] = 11] = "EqualsGreaterThan";
+    TokenType[TokenType["SemiColon"] = 12] = "SemiColon";
+    TokenType[TokenType["Const"] = 13] = "Const";
+    TokenType[TokenType["Let"] = 14] = "Let";
+    TokenType[TokenType["Return"] = 15] = "Return";
+    TokenType[TokenType["For"] = 16] = "For";
 })(TokenType || (TokenType = {}));
+var ElementTokenType;
+(function (ElementTokenType) {
+    ElementTokenType[ElementTokenType["div"] = 0] = "div";
+    ElementTokenType[ElementTokenType["a"] = 1] = "a";
+    ElementTokenType[ElementTokenType["abbr"] = 2] = "abbr";
+    ElementTokenType[ElementTokenType["main"] = 3] = "main";
+})(ElementTokenType || (ElementTokenType = {}));
+var ELEMENTS = {
+    div: ElementTokenType.div,
+    a: ElementTokenType.a
+};
+var KEYWORDS = {
+    'const': TokenType.Const,
+    'return': TokenType.Return
+};
 // takes in a string, '<div></div>' for e.g and splits it into individual characters, then checks if they match a specific thing.
 function tokenize(sourceCode) {
     var tokens = new Array();
@@ -23,29 +44,64 @@ function tokenize(sourceCode) {
     while (src.length > 0) {
         // the length of src array is greater than 0, run this, some if statements reduce the length of the src array by calling the shift method on it
         if (src[0] === '<') {
-            tokens.push((0, helpers_1.token)(src.shift(), TokenType.LessThan));
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.LessThan));
         }
         else if (src[0] === '/' && tokens[tokens.length - 1].value === '<') {
             tokens[tokens.length - 1].value += src.shift();
             tokens[tokens.length - 1].type = TokenType.LessThanSlash;
         }
         else if (src[0] === '>') {
-            tokens.push((0, helpers_1.token)(src.shift(), TokenType.GreaterThan));
+            if (tokens[tokens.length - 1].value === '=') {
+                console.log('done');
+                tokens[tokens.length - 1].value += src.shift();
+                tokens[tokens.length - 1].type = TokenType.EqualsGreaterThan;
+            }
+            else {
+                tokens.push((0, helper_1.token)(src.shift(), TokenType.GreaterThan));
+            }
+        }
+        else if (src[0] === '=') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.Equals));
+        }
+        else if (src[0] === '{') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.OpenCurlyBrace));
+        }
+        else if (src[0] === '}') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.CloseCurlyBrace));
+        }
+        else if (src[0] === '(') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.OpenParen));
+        }
+        else if (src[0] === ')') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.CloseParen));
+        }
+        else if (src[0] === ',') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.Comma));
+        }
+        else if (src[0] === ';') {
+            tokens.push((0, helper_1.token)(src.shift(), TokenType.SemiColon));
         }
         else {
-            if ((0, helpers_1.isAlpha)(src[0])) {
-                var alpha = '';
-                while (src.length > 0 && (0, helpers_1.isAlpha)(src[0])) {
-                    alpha += src[0];
+            if ((0, helper_1.isAlpha)(src[0])) {
+                var identifier = '';
+                while (src.length > 0 && (0, helper_1.isAlpha)(src[0])) {
+                    identifier += src[0];
                     src.shift();
                 }
-                tokens.push((0, helpers_1.token)(alpha, TokenType.TagName));
+                var reserved = KEYWORDS[identifier];
+                if (reserved == undefined) {
+                    tokens.push((0, helper_1.token)(identifier, TokenType.Identifier));
+                }
+                else {
+                    tokens.push((0, helper_1.token)(identifier, reserved));
+                }
             }
-            else if ((0, helpers_1.isSkippable)(src[0])) {
+            else if ((0, helper_1.isSkippable)(src[0])) {
                 src.shift(); // move to next character
             }
             else {
-                throw "Unrecognized source ".concat(src[0]);
+                src.shift();
+                console.log('me');
             }
         }
     }

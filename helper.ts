@@ -1,18 +1,4 @@
-enum TokenType {
-  TagName,
-  LessThan,
-  GreaterThan, 
-  LessThanSlash,
-  Equals, 
-  OpenParen,
-  OpenCurlyBrace,
-  Comma,
-  CloseCurlyBrace,
-  CloseParen,
-  EqualsGreaterThan,
-}
-
-function token(value = '', type: TokenType) {
+function token(value = '', type: TokenType): Token {
   return {value, type}
 }
 // checki if it is string
