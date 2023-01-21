@@ -1,5 +1,16 @@
 {
+  "scripts": {
+    "comp": " tsc transpiler.ts --module commonjs --target es6 --watch "
+  },
   "dependencies": {
     "@types/node": "^18.11.18"
-  }
+  },
+  "name": "nixix-compiler",
+  "description": "",
+  "version": "1.0.0",
+  "main": "nixix.js",
+  "devDependencies": {},
+  "keywords": [],
+  "author": "Ikechukwu Charles",
+  "license": "ISC"
 }

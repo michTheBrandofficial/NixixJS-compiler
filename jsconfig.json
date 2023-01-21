@@ -3,8 +3,9 @@
     "module": "commonjs",
     "target": "es6"
   },
-  "types": [
-    "@types/node"
+  "typeRoots": [
+    "@types/node",
+    "./types"
   ],
   "exclude": [
     "node_modules",

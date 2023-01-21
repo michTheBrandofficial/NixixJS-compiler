@@ -11,5 +11,10 @@ const { default: tokenize } = require('./transpiler')
 readFile(path.join(__dirname, '.', 'nixix.js'), 'utf8', (err, module) => {
   if (err) throw err;
   const newModule = tokenize(module);
-  console.log(newModule)
+  console.log(newModule);
+})
+
+process.on('uncaughtException', err => {
+  console.error(`There was an uncaught error: ${err}`)
+  process.exit(1);
 })
