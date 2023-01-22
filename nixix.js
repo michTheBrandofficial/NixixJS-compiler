@@ -1,5 +1,1 @@
-const App = ({name}) => { 
-  return (
-    <div>{name}</div>
-  )
-};
+const i = div

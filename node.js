@@ -1,20 +1,15 @@
-const {
-  readFile, 
-  writeFile,
-  appendFile
-} = require('fs')
+import { readFile } from 'fs'
+import path from 'path'
+import process from 'process'
+import tokenize from './transpiler.js'
 
-const path = require('path')
-const process = require('process')
-const { default: tokenize } = require('./transpiler')
-
-readFile(path.join(__dirname, '.', 'nixix.js'), 'utf8', (err, module) => {
+readFile(path.join('./','nixix.js'), 'utf8', (err, module) => {
   if (err) throw err;
   const newModule = tokenize(module);
   console.log(newModule);
 })
 
 process.on('uncaughtException', err => {
-  console.error(`There was an uncaught error: ${err}`)
+  console.error(`There was an uncaught error: ${err.stack}`)
   process.exit(1);
 })

@@ -1,6 +1,6 @@
 import { isAlpha, isSkippable, token } from "./helper";
 
-enum TokenType {
+export enum TokenType {
   TagName,
   Identifier,
   LessThan,
@@ -18,6 +18,7 @@ enum TokenType {
   Let,
   Return,
   For,
+  EOF
 }
 
 enum ElementTokenType {
@@ -42,7 +43,6 @@ function tokenize(sourceCode: string): Token[] {
   const tokens = new Array<Token>();
   const src = sourceCode.split('');
   // logging used for debugging
-
   while (src.length > 0) {
     // the length of src array is greater than 0, run this, some if statements reduce the length of the src array by calling the shift method on it
     if (src[0] === '<') {
@@ -93,9 +93,9 @@ function tokenize(sourceCode: string): Token[] {
       }
     }
   }
+
+  tokens.push({type: TokenType.EOF, value: 'EOF'})
   return tokens;
 }
 
-module.exports = {
-  default: tokenize
-}
+export default tokenize;

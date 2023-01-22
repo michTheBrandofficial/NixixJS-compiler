@@ -7,4 +7,8 @@ declare global {
     value: string,
     type: TokenType
   } 
+
+  interface Window {
+    main: any
+  }
 }

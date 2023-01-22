@@ -1,7 +1,5 @@
-"use strict";
-exports.__esModule = true;
-var helper_1 = require("./helper");
-var TokenType;
+import { isAlpha, isSkippable, token } from "./helper.js";
+export var TokenType;
 (function (TokenType) {
     TokenType[TokenType["TagName"] = 0] = "TagName";
     TokenType[TokenType["Identifier"] = 1] = "Identifier";
@@ -20,6 +18,7 @@ var TokenType;
     TokenType[TokenType["Let"] = 14] = "Let";
     TokenType[TokenType["Return"] = 15] = "Return";
     TokenType[TokenType["For"] = 16] = "For";
+    TokenType[TokenType["EOF"] = 17] = "EOF";
 })(TokenType || (TokenType = {}));
 var ElementTokenType;
 (function (ElementTokenType) {
@@ -28,23 +27,23 @@ var ElementTokenType;
     ElementTokenType[ElementTokenType["abbr"] = 2] = "abbr";
     ElementTokenType[ElementTokenType["main"] = 3] = "main";
 })(ElementTokenType || (ElementTokenType = {}));
-var ELEMENTS = {
+const ELEMENTS = {
     div: ElementTokenType.div,
     a: ElementTokenType.a
 };
-var KEYWORDS = {
+const KEYWORDS = {
     'const': TokenType.Const,
     'return': TokenType.Return
 };
 // takes in a string, '<div></div>' for e.g and splits it into individual characters, then checks if they match a specific thing.
 function tokenize(sourceCode) {
-    var tokens = new Array();
-    var src = sourceCode.split('');
+    const tokens = new Array();
+    const src = sourceCode.split('');
     // logging used for debugging
     while (src.length > 0) {
         // the length of src array is greater than 0, run this, some if statements reduce the length of the src array by calling the shift method on it
         if (src[0] === '<') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.LessThan));
+            tokens.push(token(src.shift(), TokenType.LessThan));
         }
         else if (src[0] === '/' && tokens[tokens.length - 1].value === '<') {
             tokens[tokens.length - 1].value += src.shift();
@@ -57,46 +56,46 @@ function tokenize(sourceCode) {
                 tokens[tokens.length - 1].type = TokenType.EqualsGreaterThan;
             }
             else {
-                tokens.push((0, helper_1.token)(src.shift(), TokenType.GreaterThan));
+                tokens.push(token(src.shift(), TokenType.GreaterThan));
             }
         }
         else if (src[0] === '=') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.Equals));
+            tokens.push(token(src.shift(), TokenType.Equals));
         }
         else if (src[0] === '{') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.OpenCurlyBrace));
+            tokens.push(token(src.shift(), TokenType.OpenCurlyBrace));
         }
         else if (src[0] === '}') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.CloseCurlyBrace));
+            tokens.push(token(src.shift(), TokenType.CloseCurlyBrace));
         }
         else if (src[0] === '(') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.OpenParen));
+            tokens.push(token(src.shift(), TokenType.OpenParen));
         }
         else if (src[0] === ')') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.CloseParen));
+            tokens.push(token(src.shift(), TokenType.CloseParen));
         }
         else if (src[0] === ',') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.Comma));
+            tokens.push(token(src.shift(), TokenType.Comma));
         }
         else if (src[0] === ';') {
-            tokens.push((0, helper_1.token)(src.shift(), TokenType.SemiColon));
+            tokens.push(token(src.shift(), TokenType.SemiColon));
         }
         else {
-            if ((0, helper_1.isAlpha)(src[0])) {
-                var identifier = '';
-                while (src.length > 0 && (0, helper_1.isAlpha)(src[0])) {
+            if (isAlpha(src[0])) {
+                let identifier = '';
+                while (src.length > 0 && isAlpha(src[0])) {
                     identifier += src[0];
                     src.shift();
                 }
-                var reserved = KEYWORDS[identifier];
+                const reserved = KEYWORDS[identifier];
                 if (reserved == undefined) {
-                    tokens.push((0, helper_1.token)(identifier, TokenType.Identifier));
+                    tokens.push(token(identifier, TokenType.Identifier));
                 }
                 else {
-                    tokens.push((0, helper_1.token)(identifier, reserved));
+                    tokens.push(token(identifier, reserved));
                 }
             }
-            else if ((0, helper_1.isSkippable)(src[0])) {
+            else if (isSkippable(src[0])) {
                 src.shift(); // move to next character
             }
             else {
@@ -105,8 +104,7 @@ function tokenize(sourceCode) {
             }
         }
     }
+    tokens.push({ type: TokenType.EOF, value: 'EOF' });
     return tokens;
 }
-module.exports = {
-    "default": tokenize
-};
+export default tokenize;

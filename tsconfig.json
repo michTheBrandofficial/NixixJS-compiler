@@ -4,8 +4,12 @@
     "target": "es6"
   },
   "typeRoots": [
-    "@types/node",
+    "./node_modules/@types/",
     "./types"
+  ],
+  "types": [
+    "node",
+    "./node_modules/@types/node"
   ],
   "exclude": [
     "node_modules",
